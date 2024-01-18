@@ -1,15 +1,13 @@
-import fastify from 'fastify'
+import config from './config.js'
+import Server from './server.js'
 
-const server = fastify()
+const server = new Server(config.server.port)
 
-server.get('/ping', async (request, reply) => {
-  return 'pong\n'
-})
-
-server.listen({ port: 8080 }, (err, address) => {
-  if (err) {
-    console.error(err)
-    process.exit(1)
-  }
-  console.log(`Server listening at ${address}`)
-})
+try {
+  await server.start()
+  console.log(`Server running on port ${config.server.port}`)
+} catch (error) {
+  console.error(`Failed to start server on port ${config.server.port}`)
+  console.error(error)
+  process.exit(1)
+}
