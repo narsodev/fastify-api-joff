@@ -1,5 +1,5 @@
 import fastify from 'fastify'
-import usersRouter from './routes/users.route.js'
+import usersRouter from './modules/user/user.router.js'
 
 export default class Server {
   private server = fastify()
