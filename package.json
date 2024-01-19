@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "build": "lerna run build",
-    "start": "lerna run start"
+    "start": "lerna run start",
+    "dev": "lerna run dev"
   },
   "workspaces": [
     "packages/*",
