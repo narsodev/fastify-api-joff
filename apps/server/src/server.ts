@@ -1,4 +1,5 @@
 import fastify from 'fastify'
+import usersRouter from './routes/users.route.js'
 
 export default class Server {
   private server = fastify()
@@ -12,6 +13,8 @@ export default class Server {
     this.server.get('/ping', () => {
       return 'pong\n'
     })
+
+    this.server.register(usersRouter, { prefix: '/api/users' })
 
     await this.server.listen({ port: this.port })
   }
