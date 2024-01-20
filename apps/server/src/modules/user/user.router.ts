@@ -9,14 +9,23 @@ import {
   UserUpdateDTOSchema
 } from './user.dto.js'
 import { FastifyTypebox } from '../../server/server.types.js'
+import { UserNotFoundException } from './user.exceptions.js'
 
 const userRepository = new UserPrismaRepository(db)
 const userService = new UserService(userRepository)
 
-const usersRouter: FastifyPluginAsync = async (
-  fastify: FastifyTypebox,
-  opts
-) => {
+const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
+  fastify.setErrorHandler((error, request, reply) => {
+    if (error instanceof UserNotFoundException) {
+      reply.status(404).send({
+        message: error.message
+      })
+      return
+    }
+
+    reply.send(error)
+  })
+
   fastify.get(
     '/',
     {
@@ -41,8 +50,10 @@ const usersRouter: FastifyPluginAsync = async (
           id: Type.Number()
         }),
         response: {
-          200: UserResponseDTOSchema
-          // TODO: 404
+          200: UserResponseDTOSchema,
+          404: Type.Object({
+            message: Type.String()
+          })
         }
       }
     },
@@ -79,8 +90,10 @@ const usersRouter: FastifyPluginAsync = async (
         }),
         body: UserUpdateDTOSchema,
         response: {
-          200: UserResponseDTOSchema
-          // TODO: 404
+          200: UserResponseDTOSchema,
+          404: Type.Object({
+            message: Type.String()
+          })
         }
       }
     },

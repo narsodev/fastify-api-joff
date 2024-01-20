@@ -37,8 +37,14 @@ export default class UserService {
   }
 
   async update(id: User['id'], input: UserUpdateDTO): Promise<UserResponseDTO> {
-    const user = await this.userRepository.update(id, input)
+    const user = await this.userRepository.getById(id)
 
-    return user
+    if (!user) {
+      throw new UserNotFoundException()
+    }
+
+    const updatedUser = await this.userRepository.update(id, input)
+
+    return updatedUser
   }
 }
