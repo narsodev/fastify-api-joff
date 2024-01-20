@@ -1,4 +1,6 @@
 import fastify from 'fastify'
+import swagger from '@fastify/swagger'
+import swaggerUi from '@fastify/swagger-ui'
 import usersRouter from './modules/user/user.router.js'
 
 export default class Server {
@@ -14,7 +16,23 @@ export default class Server {
       return 'pong\n'
     })
 
+    await this.server.register(swagger, {
+      swagger: {
+        info: {
+          title: 'Fastify API',
+          description: 'Fastify API for technical assessment',
+          version: '0.1.0'
+        }
+      }
+    })
+
+    await this.server.register(swaggerUi, {
+      routePrefix: '/api/docs'
+    })
+
     this.server.register(usersRouter, { prefix: '/api/users' })
+
+    await this.server.ready()
 
     await this.server.listen({ port: this.port })
   }
