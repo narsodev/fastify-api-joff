@@ -1,6 +1,8 @@
-import type { User, UserCreate } from '../user.entity.js'
+import type { User, UserCreate, UserUpdate } from '../user.entity.js'
 
 export interface UserRepository {
   getAll(): Promise<User[]>
-  create(user: UserCreate): Promise<User>
+  getById(id: User['id']): Promise<User | null>
+  create(data: UserCreate): Promise<User>
+  update(id: User['id'], data: UserUpdate): Promise<User>
 }
