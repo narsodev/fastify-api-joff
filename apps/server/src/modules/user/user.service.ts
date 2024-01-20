@@ -1,6 +1,11 @@
 import type { UserRepository } from './repositories/user.repository.js'
-import type { UserResponseDTO, UserCreateDTO } from './user.dto.js'
+import type {
+  UserResponseDTO,
+  UserCreateDTO,
+  UserUpdateDTO
+} from './user.dto.js'
 import type { User } from './user.entity.js'
+import { UserNotFoundException } from './user.exceptions.js'
 
 export default class UserService {
   private readonly userRepository: UserRepository
@@ -15,8 +20,12 @@ export default class UserService {
     return users
   }
 
-  async getById(id: User['id']): Promise<UserResponseDTO | null> {
+  async getById(id: User['id']): Promise<UserResponseDTO> {
     const user = await this.userRepository.getById(id)
+
+    if (!user) {
+      throw new UserNotFoundException()
+    }
 
     return user
   }
@@ -27,7 +36,7 @@ export default class UserService {
     return user
   }
 
-  async update(id: User['id'], input: UserCreateDTO): Promise<UserResponseDTO> {
+  async update(id: User['id'], input: UserUpdateDTO): Promise<UserResponseDTO> {
     const user = await this.userRepository.update(id, input)
 
     return user

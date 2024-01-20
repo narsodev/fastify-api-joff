@@ -3,23 +3,26 @@ import { Type } from '@sinclair/typebox'
 import UserPrismaRepository from './repositories/user.prisma-repository.js'
 import db from '../../db.js'
 import UserService from './user.service.js'
+import {
+  UserCreateDTOSchema,
+  UserResponseDTOSchema,
+  UserUpdateDTOSchema
+} from './user.dto.js'
+import { FastifyTypebox } from '../../server/server.types.js'
 
 const userRepository = new UserPrismaRepository(db)
 const userService = new UserService(userRepository)
 
-const usersRouter: FastifyPluginAsync = async (fastify, opts) => {
+const usersRouter: FastifyPluginAsync = async (
+  fastify: FastifyTypebox,
+  opts
+) => {
   fastify.get(
     '/',
     {
       schema: {
         response: {
-          200: Type.Array(
-            Type.Object({
-              id: Type.Number(),
-              name: Type.String(),
-              email: Type.String()
-            })
-          )
+          200: Type.Array(UserResponseDTOSchema)
         }
       }
     },
@@ -38,17 +41,13 @@ const usersRouter: FastifyPluginAsync = async (fastify, opts) => {
           id: Type.Number()
         }),
         response: {
-          200: Type.Object({
-            id: Type.Number(),
-            name: Type.String(),
-            email: Type.String()
-          })
+          200: UserResponseDTOSchema
           // TODO: 404
         }
       }
     },
     async (request, reply) => {
-      const user = await userService.getById(Number((request.params as any).id))
+      const user = await userService.getById(request.params.id)
 
       reply.send(user)
     }
@@ -58,21 +57,14 @@ const usersRouter: FastifyPluginAsync = async (fastify, opts) => {
     '/',
     {
       schema: {
-        body: Type.Object({
-          name: Type.String(),
-          email: Type.String()
-        }),
+        body: UserCreateDTOSchema,
         response: {
-          201: Type.Object({
-            id: Type.Number(),
-            name: Type.String(),
-            email: Type.String()
-          })
+          201: UserResponseDTOSchema
         }
       }
     },
     async (request, reply) => {
-      const user = await userService.create(request.body as any)
+      const user = await userService.create(request.body)
 
       reply.status(201).send(user)
     }
@@ -85,25 +77,15 @@ const usersRouter: FastifyPluginAsync = async (fastify, opts) => {
         params: Type.Object({
           id: Type.Number()
         }),
-        body: Type.Object({
-          name: Type.Optional(Type.String()),
-          email: Type.Optional(Type.String())
-        }),
+        body: UserUpdateDTOSchema,
         response: {
-          200: Type.Object({
-            id: Type.Number(),
-            name: Type.String(),
-            email: Type.String()
-          })
+          200: UserResponseDTOSchema
           // TODO: 404
         }
       }
     },
     async (request, reply) => {
-      const user = await userService.update(
-        Number((request.params as any).id),
-        request.body as any
-      )
+      const user = await userService.update(request.params.id, request.body)
 
       reply.send(user)
     }

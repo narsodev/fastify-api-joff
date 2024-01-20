@@ -1,5 +1,5 @@
 import config from './config.js'
-import Server from './server.js'
+import Server from './server/index.js'
 
 const server = new Server(config.server.port)
 
