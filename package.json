@@ -10,7 +10,10 @@
     "packages/*",
     "apps/*"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "@fastify/type-provider-typebox": "^4.0.0",
+    "@sinclair/typebox": "^0.32.10"
+  },
   "devDependencies": {
     "lerna": "^8.0.2"
   }

@@ -1,10 +1,11 @@
 import fastify from 'fastify'
 import swagger from '@fastify/swagger'
 import swaggerUi from '@fastify/swagger-ui'
+import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import usersRouter from './modules/user/user.router.js'
 
 export default class Server {
-  private server = fastify()
+  private server = fastify().withTypeProvider<TypeBoxTypeProvider>()
   private port: number
 
   constructor(port: number) {
