@@ -11,6 +11,7 @@ const config = {
     }
   },
   auth: {
+    jwtSecret: process.env.AUTH_JWT_SECRET ?? '',
     hashRrounds: 10
   }
 } as const
