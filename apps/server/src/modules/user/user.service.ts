@@ -50,6 +50,16 @@ export default class UserService {
     return updatedUser
   }
 
+  async delete(id: User['id']): Promise<void> {
+    const user = await this.userRepository.getById(id)
+
+    if (!user) {
+      throw new UserNotFoundException()
+    }
+
+    await this.userRepository.delete(id)
+  }
+
   async getUserPicture(id: User['id']): Promise<Uint8Array> {
     const user = await this.userRepository.getById(id)
 

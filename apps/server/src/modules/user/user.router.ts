@@ -107,6 +107,28 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
     }
   )
 
+  fastify.delete(
+    '/:id',
+    {
+      schema: {
+        params: Type.Object({
+          id: Type.Number()
+        }),
+        response: {
+          204: {},
+          404: Type.Object({
+            message: Type.String()
+          })
+        }
+      }
+    },
+    async (request, reply) => {
+      await userService.delete(request.params.id)
+
+      reply.status(204).send()
+    }
+  )
+
   fastify.get(
     '/:id/picture',
     {

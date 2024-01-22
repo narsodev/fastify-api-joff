@@ -38,4 +38,12 @@ export default class UserPrismaRepository implements UserRepository {
       data
     })
   }
+
+  async delete(id: User['id']): Promise<void> {
+    await this.db.user.delete({
+      where: {
+        id
+      }
+    })
+  }
 }
