@@ -1,4 +1,4 @@
-// import { Stream } from 'node:stream'
+import { hash } from '@joff/crypto'
 import type { UserRepository } from './repositories/user.repository.js'
 import type {
   UserResponseDTO,
@@ -8,7 +8,6 @@ import type {
 import type { User } from './user.entity.js'
 import { UserNotFoundException } from './user.exceptions.js'
 import FileRepository from '../files/file.repository.js'
-import { hash } from 'bcrypt'
 import config from '../../config.js'
 
 export default class UserService {

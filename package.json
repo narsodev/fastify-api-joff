@@ -1,10 +1,10 @@
 {
-  "name": "root",
+  "name": "joff",
   "private": true,
   "scripts": {
     "build": "lerna run build",
     "start": "lerna run start",
-    "dev": "lerna run dev"
+    "dev": "lerna run dev --stream --parallel"
   },
   "workspaces": [
     "packages/*",

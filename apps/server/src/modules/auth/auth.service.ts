@@ -1,4 +1,4 @@
-import { compareWithHash } from '../../lib/crypto.js'
+import { compareWithHash } from '@joff/crypto'
 import type { UserRepository } from '../user/repositories/user.repository.js'
 import type { UserResponseDTO } from '../user/user.dto.js'
 import { AuthFailedException } from './auth.exceptions.js'
