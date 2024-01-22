@@ -1,4 +1,4 @@
-import { FastifyPluginAsync } from 'fastify'
+import type { FastifyPluginAsync } from 'fastify'
 import multipart from '@fastify/multipart'
 import { Type } from '@sinclair/typebox'
 import UserPrismaRepository from './repositories/user.prisma-repository.js'
@@ -7,6 +7,7 @@ import UserService from './user.service.js'
 import {
   UserCreateDTOSchema,
   UserResponseDTOSchema,
+  UserUpdateDTO,
   UserUpdateDTOSchema
 } from './user.dto.js'
 import { FastifyTypebox } from '../../server/server.types.js'
@@ -98,10 +99,17 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
             message: Type.String()
           })
         }
-      }
+      },
+      onRequest: fastify.authenticate
     },
     async (request, reply) => {
-      const user = await userService.update(request.params.id, request.body)
+      const params = request.params as { id: number }
+      const body = request.body as UserUpdateDTO
+
+      const user = await userService.update(params.id, {
+        data: body,
+        loggedUser: request.loggedUser
+      })
 
       reply.send(user)
     }

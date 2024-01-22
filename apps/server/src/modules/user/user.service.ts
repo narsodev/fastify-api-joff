@@ -42,14 +42,22 @@ export default class UserService {
     return user
   }
 
-  async update(id: User['id'], input: UserUpdateDTO): Promise<UserResponseDTO> {
+  async update(
+    id: User['id'],
+    { data, loggedUser }: { data: UserUpdateDTO; loggedUser: User }
+  ): Promise<UserResponseDTO> {
     const user = await this.userRepository.getById(id)
 
     if (!user) {
       throw new UserNotFoundException()
     }
 
-    const updatedUser = await this.userRepository.update(id, input)
+    if (user.id !== loggedUser.id) {
+      // TODO: throw forbidden error
+      throw new Error('Forbidden')
+    }
+
+    const updatedUser = await this.userRepository.update(id, data)
 
     return updatedUser
   }

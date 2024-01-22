@@ -13,8 +13,7 @@ export const UserCreateDTOSchema = Type.Object({
 })
 
 export const UserUpdateDTOSchema = Type.Object({
-  name: Type.Optional(Type.String()),
-  email: Type.Optional(Type.String())
+  name: Type.Optional(Type.String())
 })
 
 export type UserResponseDTO = Static<typeof UserResponseDTOSchema>

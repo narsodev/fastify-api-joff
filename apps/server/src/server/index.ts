@@ -6,6 +6,9 @@ import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import usersRouter from '../modules/user/user.router.js'
 import config from '../config.js'
 import authRouter from '../modules/auth/auth.router.js'
+import { decorateWithAuth } from '../modules/auth/auth.fastify-utils.js'
+import UserPrismaRepository from '../modules/user/repositories/user.prisma-repository.js'
+import db from '../db.js'
 
 export default class Server {
   private server = fastify().withTypeProvider<TypeBoxTypeProvider>()
@@ -21,6 +24,7 @@ export default class Server {
     })
 
     await this.server.register(jwt, { secret: config.auth.jwtSecret })
+    await decorateWithAuth(this.server, new UserPrismaRepository(db))
 
     await this.server.register(swagger, {
       swagger: {
