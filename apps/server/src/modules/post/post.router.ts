@@ -16,11 +16,16 @@ const postsRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
       schema: {
         response: {
           200: Type.Array(PostResponseDTOSchema)
-        }
+        },
+        querystring: Type.Object({
+          authorId: Type.Optional(Type.Number())
+        })
       }
     },
     async (request, reply) => {
-      const posts = await postService.getAll()
+      const posts = await postService.getAll({
+        authorId: request.query.authorId
+      })
 
       reply.send(posts)
     }

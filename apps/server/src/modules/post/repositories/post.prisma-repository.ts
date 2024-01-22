@@ -9,8 +9,8 @@ export default class PostPrismaRepository implements PostRepository {
     this.db = db
   }
 
-  async getAll(): Promise<Post[]> {
-    return await this.db.post.findMany()
+  async getAll({ authorId }: { authorId?: Post['authorId'] }): Promise<Post[]> {
+    return await this.db.post.findMany({ where: { authorId } })
   }
 
   async getById(id: Post['id']): Promise<Post | null> {

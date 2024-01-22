@@ -8,8 +8,8 @@ export default class PostService {
     this.postRepository = postRepository
   }
 
-  async getAll(): Promise<Post[]> {
-    return await this.postRepository.getAll()
+  async getAll({ authorId }: { authorId?: Post['authorId'] }): Promise<Post[]> {
+    return await this.postRepository.getAll({ authorId })
   }
 
   async getById(id: number): Promise<Post> {
@@ -20,11 +20,5 @@ export default class PostService {
     }
 
     return post
-  }
-
-  async getByAuthorId(authorId: Post['authorId']): Promise<Post[]> {
-    const posts = await this.postRepository.getByAuthorId(authorId)
-
-    return posts
   }
 }
