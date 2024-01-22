@@ -18,30 +18,36 @@ export default class Server {
     this.port = port
   }
 
-  async start() {
-    this.server.get('/ping', () => {
-      return 'pong\n'
-    })
-
+  async addAuth() {
     await this.server.register(jwt, { secret: config.auth.jwtSecret })
     await decorateWithAuth(this.server, new UserPrismaRepository(db))
+  }
 
+  async addSwagger() {
     await this.server.register(swagger, {
       swagger: {
         info: {
-          title: 'Fastify API',
-          description: 'Fastify API for technical assessment',
-          version: '0.1.0'
+          title: config.swagger.name,
+          description: config.swagger.description,
+          version: config.swagger.version
         }
       }
     })
 
     await this.server.register(swaggerUi, {
-      routePrefix: '/api/docs'
+      routePrefix: config.swagger.route
     })
+  }
 
+  async addRoutes() {
     await this.server.register(usersRouter, { prefix: '/api/users' })
     await this.server.register(authRouter, { prefix: '/api/auth' })
+  }
+
+  async start() {
+    await this.addAuth()
+    await this.addSwagger()
+    await this.addRoutes()
 
     await this.server.ready()
 

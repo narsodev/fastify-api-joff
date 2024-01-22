@@ -13,6 +13,12 @@ const config = {
   auth: {
     jwtSecret: process.env.AUTH_JWT_SECRET ?? '',
     hashRrounds: 10
+  },
+  swagger: {
+    name: 'Fastify API',
+    description: 'Fastify API for technical assessment',
+    version: '0.1.0',
+    route: '/api/docs'
   }
 } as const
 
