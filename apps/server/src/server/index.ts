@@ -9,6 +9,7 @@ import authRouter from '../modules/auth/auth.router.js'
 import { decorateWithAuth } from '../modules/auth/auth.fastify-utils.js'
 import UserPrismaRepository from '../modules/user/repositories/user.prisma-repository.js'
 import db from '../db.js'
+import postsRouter from '../modules/post/post.router.js'
 
 export default class Server {
   private server = fastify().withTypeProvider<TypeBoxTypeProvider>()
@@ -40,8 +41,9 @@ export default class Server {
   }
 
   async addRoutes() {
-    await this.server.register(usersRouter, { prefix: '/api/users' })
     await this.server.register(authRouter, { prefix: '/api/auth' })
+    await this.server.register(usersRouter, { prefix: '/api/users' })
+    await this.server.register(postsRouter, { prefix: '/api/posts' })
   }
 
   async start() {
