@@ -1,4 +1,5 @@
 import { hash } from '@joff/crypto'
+import sharp from 'sharp'
 import type { UserRepository } from './repositories/user.repository.js'
 import type {
   UserResponseDTO,
@@ -10,6 +11,7 @@ import { UserNotFoundException } from './user.exceptions.js'
 import FileRepository from '../files/file.repository.js'
 import config from '../../config.js'
 import { requireAdmin, requireSelfOrAdmin } from './user.utils.js'
+import { IMAGE_FILE_EXTENSION } from '../constants.js'
 
 export default class UserService {
   private readonly userRepository: UserRepository
@@ -100,7 +102,7 @@ export default class UserService {
 
     const fr = new FileRepository()
 
-    const bytes = await fr.download(`${user.id}.jpg`)
+    const bytes = await fr.download(this.getUserPictureFileName(user))
     if (!bytes) {
       throw new Error('File not found')
     }
@@ -125,8 +127,13 @@ export default class UserService {
       throw new UserNotFoundException()
     }
 
+    const image = await sharp(data)
+      .resize(200, 200, { fit: 'cover' })
+      .webp()
+      .toBuffer()
+
     const fr = new FileRepository()
-    await fr.upload(data, `${user.id}.jpg`)
+    await fr.upload(image, this.getUserPictureFileName(user))
   }
 
   async deleteUserPicture({
@@ -144,6 +151,10 @@ export default class UserService {
     }
 
     const fr = new FileRepository()
-    await fr.delete(`${user.id}.jpg`)
+    await fr.delete(this.getUserPictureFileName(user))
+  }
+
+  getUserPictureFileName(user: User): string {
+    return `${user.id}.${IMAGE_FILE_EXTENSION}`
   }
 }

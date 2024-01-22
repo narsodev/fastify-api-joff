@@ -32,7 +32,7 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
     reply.send(error)
   })
 
-  fastify.register(multipart)
+  fastify.register(multipart, { attachFieldsToBody: true })
 
   fastify.get(
     '/',
@@ -201,9 +201,11 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
           id: Type.Number()
         }),
         body: {
+          type: 'object',
+          required: ['picture'],
           properties: {
             picture: {
-              isFile: true
+              isFileType: true
             }
           }
         },
@@ -222,7 +224,8 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
       onRequest: fastify.authenticate
     },
     async (request, reply) => {
-      const data = await request.file()
+      const data = await (request.body as { picture: multipart.MultipartFile })
+        .picture
 
       if (!data) {
         throw new Error('File is required')

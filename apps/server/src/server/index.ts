@@ -10,7 +10,7 @@ import { decorateWithAuth } from '../modules/auth/auth.fastify-utils.js'
 import UserPrismaRepository from '../modules/user/repositories/user.prisma-repository.js'
 import db from '../db.js'
 import postsRouter from '../modules/post/post.router.js'
-import { ajvFilePlugin } from '@fastify/multipart'
+import { ajvFilePlugin } from './server.plugins.js'
 
 export default class Server {
   private server = fastify({
