@@ -1,4 +1,4 @@
-import { S3, PutObjectCommand } from '@aws-sdk/client-s3'
+import { S3, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3'
 import config from '../../config.js'
 
 export default class FileRepository {
@@ -12,6 +12,17 @@ export default class FileRepository {
         secretAccessKey: config.aws.secretAccessKey
       }
     })
+  }
+
+  async download(filename: string): Promise<Uint8Array | undefined> {
+    const command = new GetObjectCommand({
+      Bucket: config.aws.s3.bucketName,
+      Key: filename
+    })
+
+    const response = await this.s3.send(command)
+
+    return response.Body?.transformToByteArray()
   }
 
   async upload(file: Buffer, filename: string): Promise<void> {

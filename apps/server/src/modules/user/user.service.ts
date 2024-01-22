@@ -50,6 +50,23 @@ export default class UserService {
     return updatedUser
   }
 
+  async getUserPicture(id: User['id']): Promise<Uint8Array> {
+    const user = await this.userRepository.getById(id)
+
+    if (!user) {
+      throw new UserNotFoundException()
+    }
+
+    const fr = new FileRepository()
+
+    const bytes = await fr.download(`${user.id}.jpg`)
+    if (!bytes) {
+      throw new Error('File not found')
+    }
+
+    return bytes
+  }
+
   async setUserPicture(id: User['id'], data: Buffer): Promise<any> {
     const user = await this.userRepository.getById(id)
 

@@ -107,6 +107,31 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
     }
   )
 
+  fastify.get(
+    '/:id/picture',
+    {
+      schema: {
+        params: Type.Object({
+          id: Type.Number()
+        }),
+        response: {
+          200: {
+            type: 'string',
+            format: 'binary'
+          },
+          404: Type.Object({
+            message: Type.String()
+          })
+        }
+      }
+    },
+    async (request, reply) => {
+      const bytes = await userService.getUserPicture(request.params.id)
+
+      reply.type('image/jpg').send(bytes)
+    }
+  )
+
   fastify.put(
     '/:id/picture',
     {
