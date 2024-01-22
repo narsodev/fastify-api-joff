@@ -240,6 +240,36 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
       reply.status(204).send()
     }
   )
+
+  fastify.delete(
+    '/:id/picture',
+    {
+      schema: {
+        params: Type.Object({
+          id: Type.Number()
+        }),
+        response: {
+          204: {},
+          404: Type.Object({
+            message: Type.String()
+          })
+        },
+        tags: TAGS,
+        summary: 'Delete user picture by id',
+        security: FASTIFY_SCHEMA_SECURITY
+      },
+      onRequest: fastify.authenticate
+    },
+    async (request, reply) => {
+      const params = request.params as { id: number }
+      await userService.deleteUserPicture({
+        id: params.id,
+        loggedUser: request.loggedUser
+      })
+
+      reply.status(204).send()
+    }
+  )
 }
 
 export default usersRouter

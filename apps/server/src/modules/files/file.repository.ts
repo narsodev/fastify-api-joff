@@ -1,4 +1,9 @@
-import { S3, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3'
+import {
+  S3,
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectCommand
+} from '@aws-sdk/client-s3'
 import config from '../../config.js'
 
 export default class FileRepository {
@@ -30,6 +35,15 @@ export default class FileRepository {
       Bucket: config.aws.s3.bucketName,
       Key: filename,
       Body: file
+    })
+
+    await this.s3.send(command)
+  }
+
+  async delete(filename: string): Promise<void> {
+    const command = new DeleteObjectCommand({
+      Bucket: config.aws.s3.bucketName,
+      Key: filename
     })
 
     await this.s3.send(command)

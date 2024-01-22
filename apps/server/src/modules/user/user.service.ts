@@ -60,13 +60,13 @@ export default class UserService {
     data: UserUpdateDTO
     loggedUser: User
   }): Promise<UserResponseDTO> {
+    requireSelfOrAdmin(loggedUser, id)
+
     const user = await this.userRepository.getById(id)
 
     if (!user) {
       throw new UserNotFoundException()
     }
-
-    requireSelfOrAdmin(loggedUser, id)
 
     const updatedUser = await this.userRepository.update(id, data)
 
@@ -80,13 +80,13 @@ export default class UserService {
     id: User['id']
     loggedUser: User
   }): Promise<void> {
+    requireSelfOrAdmin(loggedUser, id)
+
     const user = await this.userRepository.getById(id)
 
     if (!user) {
       throw new UserNotFoundException()
     }
-
-    requireSelfOrAdmin(loggedUser, id)
 
     await this.userRepository.delete(id)
   }
@@ -117,15 +117,33 @@ export default class UserService {
     data: Buffer
     loggedUser: User
   }): Promise<any> {
+    requireSelfOrAdmin(loggedUser, id)
+
     const user = await this.userRepository.getById(id)
 
     if (!user) {
       throw new UserNotFoundException()
     }
 
-    requireSelfOrAdmin(loggedUser, id)
-
     const fr = new FileRepository()
     await fr.upload(data, `${user.id}.jpg`)
+  }
+
+  async deleteUserPicture({
+    id,
+    loggedUser
+  }: {
+    id: User['id']
+    loggedUser: User
+  }): Promise<void> {
+    requireSelfOrAdmin(loggedUser, id)
+    const user = await this.userRepository.getById(id)
+
+    if (!user) {
+      throw new UserNotFoundException()
+    }
+
+    const fr = new FileRepository()
+    await fr.delete(`${user.id}.jpg`)
   }
 }
