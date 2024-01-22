@@ -5,6 +5,7 @@ import UserPrismaRepository from './repositories/user.prisma-repository.js'
 import db from '../../db.js'
 import UserService from './user.service.js'
 import {
+  UserCreateDTO,
   UserCreateDTOSchema,
   UserResponseDTOSchema,
   UserUpdateDTO,
@@ -76,10 +77,15 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
         response: {
           201: UserResponseDTOSchema
         }
-      }
+      },
+      onRequest: fastify.authenticate
     },
     async (request, reply) => {
-      const user = await userService.create(request.body)
+      const body = request.body as UserCreateDTO
+      const user = await userService.create({
+        data: body,
+        loggedUser: request.loggedUser
+      })
 
       reply.status(201).send(user)
     }
@@ -106,7 +112,8 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
       const params = request.params as { id: number }
       const body = request.body as UserUpdateDTO
 
-      const user = await userService.update(params.id, {
+      const user = await userService.update({
+        id: params.id,
         data: body,
         loggedUser: request.loggedUser
       })
@@ -128,10 +135,15 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
             message: Type.String()
           })
         }
-      }
+      },
+      onRequest: fastify.authenticate
     },
     async (request, reply) => {
-      await userService.delete(request.params.id)
+      const params = request.params as { id: number }
+      await userService.delete({
+        id: params.id,
+        loggedUser: request.loggedUser
+      })
 
       reply.status(204).send()
     }
@@ -156,7 +168,8 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
       }
     },
     async (request, reply) => {
-      const bytes = await userService.getUserPicture(request.params.id)
+      const params = request.params as { id: number }
+      const bytes = await userService.getUserPicture({ id: params.id })
 
       reply.type('image/jpg').send(bytes)
     }
@@ -175,7 +188,8 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
             message: Type.String()
           })
         }
-      }
+      },
+      onRequest: fastify.authenticate
     },
     async (request, reply) => {
       const data = await request.file()
@@ -186,7 +200,12 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
 
       const buffer = await data.toBuffer()
 
-      await userService.setUserPicture(request.params.id, buffer)
+      const params = request.params as { id: number }
+      await userService.setUserPicture({
+        id: params.id,
+        data: buffer,
+        loggedUser: request.loggedUser
+      })
 
       reply.send()
     }

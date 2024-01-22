@@ -1,4 +1,5 @@
 import { Type, type Static } from '@sinclair/typebox'
+import { UserRoles } from './user.entity.js'
 
 export const UserResponseDTOSchema = Type.Object({
   id: Type.Number(),
@@ -9,7 +10,11 @@ export const UserResponseDTOSchema = Type.Object({
 export const UserCreateDTOSchema = Type.Object({
   name: Type.String(),
   email: Type.String(),
-  password: Type.String()
+  password: Type.String(),
+  role: Type.Union([
+    Type.Literal(UserRoles.ADMIN),
+    Type.Literal(UserRoles.USER)
+  ])
 })
 
 export const UserUpdateDTOSchema = Type.Object({

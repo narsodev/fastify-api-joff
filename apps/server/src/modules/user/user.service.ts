@@ -5,10 +5,11 @@ import type {
   UserCreateDTO,
   UserUpdateDTO
 } from './user.dto.js'
-import type { User } from './user.entity.js'
+import { UserRoles, type User, type UserCreate } from './user.entity.js'
 import { UserNotFoundException } from './user.exceptions.js'
 import FileRepository from '../files/file.repository.js'
 import config from '../../config.js'
+import ForbiddenException from '../../exceptions/ForbiddenException.js'
 
 export default class UserService {
   private readonly userRepository: UserRepository
@@ -33,46 +34,64 @@ export default class UserService {
     return user
   }
 
-  async create(input: UserCreateDTO): Promise<UserResponseDTO> {
-    const data = { ...input }
-    data.password = await hash(data.password, config.auth.hashRrounds)
+  async create({
+    data,
+    loggedUser
+  }: {
+    data: UserCreateDTO
+    loggedUser: User
+  }): Promise<UserResponseDTO> {
+    this.requireAdmin(loggedUser)
 
-    const user = await this.userRepository.create(data)
+    const createData: UserCreate = { ...data }
+    createData.password = await hash(data.password, config.auth.hashRrounds)
+
+    const user = await this.userRepository.create(createData)
 
     return user
   }
 
-  async update(
-    id: User['id'],
-    { data, loggedUser }: { data: UserUpdateDTO; loggedUser: User }
-  ): Promise<UserResponseDTO> {
+  async update({
+    id,
+    data,
+    loggedUser
+  }: {
+    id: User['id']
+    data: UserUpdateDTO
+    loggedUser: User
+  }): Promise<UserResponseDTO> {
     const user = await this.userRepository.getById(id)
 
     if (!user) {
       throw new UserNotFoundException()
     }
 
-    if (user.id !== loggedUser.id) {
-      // TODO: throw forbidden error
-      throw new Error('Forbidden')
-    }
+    this.requireSelfOrAdmin(loggedUser, id)
 
     const updatedUser = await this.userRepository.update(id, data)
 
     return updatedUser
   }
 
-  async delete(id: User['id']): Promise<void> {
+  async delete({
+    id,
+    loggedUser
+  }: {
+    id: User['id']
+    loggedUser: User
+  }): Promise<void> {
     const user = await this.userRepository.getById(id)
 
     if (!user) {
       throw new UserNotFoundException()
     }
 
+    this.requireSelfOrAdmin(loggedUser, id)
+
     await this.userRepository.delete(id)
   }
 
-  async getUserPicture(id: User['id']): Promise<Uint8Array> {
+  async getUserPicture({ id }: { id: User['id'] }): Promise<Uint8Array> {
     const user = await this.userRepository.getById(id)
 
     if (!user) {
@@ -89,15 +108,36 @@ export default class UserService {
     return bytes
   }
 
-  async setUserPicture(id: User['id'], data: Buffer): Promise<any> {
+  async setUserPicture({
+    id,
+    data,
+    loggedUser
+  }: {
+    id: User['id']
+    data: Buffer
+    loggedUser: User
+  }): Promise<any> {
     const user = await this.userRepository.getById(id)
 
     if (!user) {
       throw new UserNotFoundException()
     }
 
-    const fr = new FileRepository()
+    this.requireSelfOrAdmin(loggedUser, id)
 
+    const fr = new FileRepository()
     await fr.upload(data, `${user.id}.jpg`)
+  }
+
+  requireAdmin(user: User): void {
+    if (user.role !== UserRoles.ADMIN) {
+      throw new ForbiddenException()
+    }
+  }
+
+  requireSelfOrAdmin(user: User, id: User['id']): void {
+    if (user.role !== UserRoles.ADMIN && user.id !== id) {
+      throw new ForbiddenException()
+    }
   }
 }
