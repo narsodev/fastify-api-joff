@@ -8,6 +8,8 @@ import type {
 import type { User } from './user.entity.js'
 import { UserNotFoundException } from './user.exceptions.js'
 import FileRepository from '../files/file.repository.js'
+import { hash } from 'bcrypt'
+import config from '../../config.js'
 
 export default class UserService {
   private readonly userRepository: UserRepository
@@ -33,7 +35,10 @@ export default class UserService {
   }
 
   async create(input: UserCreateDTO): Promise<UserResponseDTO> {
-    const user = await this.userRepository.create(input)
+    const data = { ...input }
+    data.password = await hash(data.password, config.auth.hashRrounds)
+
+    const user = await this.userRepository.create(data)
 
     return user
   }

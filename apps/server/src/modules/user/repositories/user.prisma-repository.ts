@@ -21,12 +21,17 @@ export default class UserPrismaRepository implements UserRepository {
     })
   }
 
-  async create({ name, email }: UserCreate): Promise<User> {
-    return this.db.user.create({
-      data: {
-        name,
+  async getByEmail(email: User['email']): Promise<User | null> {
+    return this.db.user.findUnique({
+      where: {
         email
       }
+    })
+  }
+
+  async create(data: UserCreate): Promise<User> {
+    return this.db.user.create({
+      data
     })
   }
 

@@ -8,7 +8,8 @@ export const UserResponseDTOSchema = Type.Object({
 
 export const UserCreateDTOSchema = Type.Object({
   name: Type.String(),
-  email: Type.String()
+  email: Type.String(),
+  password: Type.String()
 })
 
 export const UserUpdateDTOSchema = Type.Object({

@@ -9,6 +9,9 @@ const config = {
     s3: {
       bucketName: process.env.AWS_S3_BUCKET_NAME ?? ''
     }
+  },
+  auth: {
+    hashRrounds: 10
   }
 } as const
 
