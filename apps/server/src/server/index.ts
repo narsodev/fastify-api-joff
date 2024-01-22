@@ -10,9 +10,14 @@ import { decorateWithAuth } from '../modules/auth/auth.fastify-utils.js'
 import UserPrismaRepository from '../modules/user/repositories/user.prisma-repository.js'
 import db from '../db.js'
 import postsRouter from '../modules/post/post.router.js'
+import { ajvFilePlugin } from '@fastify/multipart'
 
 export default class Server {
-  private server = fastify().withTypeProvider<TypeBoxTypeProvider>()
+  private server = fastify({
+    ajv: {
+      plugins: [ajvFilePlugin]
+    }
+  }).withTypeProvider<TypeBoxTypeProvider>()
   private port: number
 
   constructor(port: number) {
@@ -30,7 +35,20 @@ export default class Server {
         info: {
           title: config.swagger.name,
           description: config.swagger.description,
-          version: config.swagger.version
+          version: config.swagger.version,
+          contact: {
+            name: config.swagger.contact.name,
+            url: config.swagger.contact.url,
+            email: config.swagger.contact.email
+          }
+        },
+        securityDefinitions: {
+          'Bearer Token': {
+            type: 'apiKey',
+            name: 'Authorization',
+            in: 'header',
+            description: config.swagger.authTokenDescription
+          }
         }
       }
     })

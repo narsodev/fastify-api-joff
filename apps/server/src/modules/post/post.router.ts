@@ -9,6 +9,9 @@ import {
 } from './post.dto.js'
 import PostPrismaRepository from './repositories/post.prisma-repository.js'
 import PostService from './post.service.js'
+import { FASTIFY_SCHEMA_SECURITY } from '../constants.js'
+
+const TAGS = ['Posts']
 
 const postRepository = new PostPrismaRepository(db)
 const postService = new PostService(postRepository)
@@ -23,7 +26,9 @@ const postsRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
         },
         querystring: Type.Object({
           authorId: Type.Optional(Type.Number())
-        })
+        }),
+        tags: TAGS,
+        summary: 'Get all posts'
       }
     },
     async (request, reply) => {
@@ -47,7 +52,9 @@ const postsRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
           404: Type.Object({
             message: Type.String()
           })
-        }
+        },
+        tags: TAGS,
+        summary: 'Get post by id'
       }
     },
     async (request, reply) => {
@@ -64,7 +71,10 @@ const postsRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
         body: PostCreateDTOSchema,
         response: {
           201: PostResponseDTOSchema
-        }
+        },
+        tags: TAGS,
+        summary: 'Create post',
+        security: FASTIFY_SCHEMA_SECURITY
       },
       onRequest: fastify.authenticate
     },

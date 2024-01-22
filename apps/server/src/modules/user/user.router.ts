@@ -13,6 +13,9 @@ import {
 } from './user.dto.js'
 import { FastifyTypebox } from '../../server/server.types.js'
 import { UserNotFoundException } from './user.exceptions.js'
+import { FASTIFY_SCHEMA_SECURITY } from '../constants.js'
+
+const TAGS = ['Users']
 
 const userRepository = new UserPrismaRepository(db)
 const userService = new UserService(userRepository)
@@ -37,7 +40,9 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
       schema: {
         response: {
           200: Type.Array(UserResponseDTOSchema)
-        }
+        },
+        tags: TAGS,
+        summary: 'Get all users'
       }
     },
     async (request, reply) => {
@@ -59,7 +64,9 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
           404: Type.Object({
             message: Type.String()
           })
-        }
+        },
+        tags: TAGS,
+        summary: 'Get user by id'
       }
     },
     async (request, reply) => {
@@ -76,7 +83,10 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
         body: UserCreateDTOSchema,
         response: {
           201: UserResponseDTOSchema
-        }
+        },
+        tags: TAGS,
+        summary: 'Create user',
+        security: FASTIFY_SCHEMA_SECURITY
       },
       onRequest: fastify.authenticate
     },
@@ -104,7 +114,10 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
           404: Type.Object({
             message: Type.String()
           })
-        }
+        },
+        tags: TAGS,
+        summary: 'Update user by id',
+        security: FASTIFY_SCHEMA_SECURITY
       },
       onRequest: fastify.authenticate
     },
@@ -134,7 +147,10 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
           404: Type.Object({
             message: Type.String()
           })
-        }
+        },
+        tags: TAGS,
+        summary: 'Delete user by id',
+        security: FASTIFY_SCHEMA_SECURITY
       },
       onRequest: fastify.authenticate
     },
@@ -164,7 +180,9 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
           404: Type.Object({
             message: Type.String()
           })
-        }
+        },
+        tags: TAGS,
+        summary: 'Get user picture by id'
       }
     },
     async (request, reply) => {
@@ -182,12 +200,24 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
         params: Type.Object({
           id: Type.Number()
         }),
+        body: {
+          properties: {
+            picture: {
+              isFile: true
+            }
+          }
+        },
         response: {
-          200: {},
+          204: {},
           404: Type.Object({
             message: Type.String()
           })
-        }
+        },
+        consumes: ['multipart/form-data'],
+        description: 'File must be an image',
+        tags: TAGS,
+        summary: 'Update user picture by id',
+        security: FASTIFY_SCHEMA_SECURITY
       },
       onRequest: fastify.authenticate
     },
@@ -207,7 +237,7 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
         loggedUser: request.loggedUser
       })
 
-      reply.send()
+      reply.status(204).send()
     }
   )
 }

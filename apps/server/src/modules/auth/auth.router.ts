@@ -6,6 +6,8 @@ import UserPrismaRepository from '../user/repositories/user.prisma-repository.js
 import db from '../../db.js'
 import { AuthFailedException } from './auth.exceptions.js'
 
+const TAGS = ['Auth']
+
 const userRepository = new UserPrismaRepository(db)
 const authService = new AuthService(userRepository)
 
@@ -25,7 +27,9 @@ const authRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
           401: Type.Object({
             message: Type.String()
           })
-        }
+        },
+        tags: TAGS,
+        summary: 'Login'
       }
     },
     async (request, reply) => {
