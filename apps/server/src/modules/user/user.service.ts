@@ -5,11 +5,11 @@ import type {
   UserCreateDTO,
   UserUpdateDTO
 } from './user.dto.js'
-import { UserRoles, type User, type UserCreate } from './user.entity.js'
+import { type User, type UserCreate } from './user.entity.js'
 import { UserNotFoundException } from './user.exceptions.js'
 import FileRepository from '../files/file.repository.js'
 import config from '../../config.js'
-import ForbiddenException from '../../exceptions/ForbiddenException.js'
+import { requireAdmin, requireSelfOrAdmin } from './user.utils.js'
 
 export default class UserService {
   private readonly userRepository: UserRepository
@@ -41,7 +41,7 @@ export default class UserService {
     data: UserCreateDTO
     loggedUser: User
   }): Promise<UserResponseDTO> {
-    this.requireAdmin(loggedUser)
+    requireAdmin(loggedUser)
 
     const createData: UserCreate = { ...data }
     createData.password = await hash(data.password, config.auth.hashRrounds)
@@ -66,7 +66,7 @@ export default class UserService {
       throw new UserNotFoundException()
     }
 
-    this.requireSelfOrAdmin(loggedUser, id)
+    requireSelfOrAdmin(loggedUser, id)
 
     const updatedUser = await this.userRepository.update(id, data)
 
@@ -86,7 +86,7 @@ export default class UserService {
       throw new UserNotFoundException()
     }
 
-    this.requireSelfOrAdmin(loggedUser, id)
+    requireSelfOrAdmin(loggedUser, id)
 
     await this.userRepository.delete(id)
   }
@@ -123,21 +123,9 @@ export default class UserService {
       throw new UserNotFoundException()
     }
 
-    this.requireSelfOrAdmin(loggedUser, id)
+    requireSelfOrAdmin(loggedUser, id)
 
     const fr = new FileRepository()
     await fr.upload(data, `${user.id}.jpg`)
-  }
-
-  requireAdmin(user: User): void {
-    if (user.role !== UserRoles.ADMIN) {
-      throw new ForbiddenException()
-    }
-  }
-
-  requireSelfOrAdmin(user: User, id: User['id']): void {
-    if (user.role !== UserRoles.ADMIN && user.id !== id) {
-      throw new ForbiddenException()
-    }
   }
 }

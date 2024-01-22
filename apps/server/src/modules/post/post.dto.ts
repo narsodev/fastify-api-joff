@@ -9,8 +9,7 @@ export const PostResponseDTOSchema = Type.Object({
 
 export const PostCreateDTOSchema = Type.Object({
   title: Type.String(),
-  content: Type.String(),
-  authorId: Type.Number()
+  content: Type.String()
 })
 
 export const PostUpdateDTOSchema = Type.Object({

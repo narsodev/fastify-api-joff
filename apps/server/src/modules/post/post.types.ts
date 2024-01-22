@@ -8,3 +8,9 @@ export interface Post {
   createdAt: Date
   updatedAt: Date
 }
+
+export interface PostCreate {
+  title: string
+  content: string
+  authorId: User['id']
+}
