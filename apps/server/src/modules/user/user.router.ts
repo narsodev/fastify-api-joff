@@ -1,4 +1,5 @@
 import { FastifyPluginAsync } from 'fastify'
+import multipart from '@fastify/multipart'
 import { Type } from '@sinclair/typebox'
 import UserPrismaRepository from './repositories/user.prisma-repository.js'
 import db from '../../db.js'
@@ -25,6 +26,8 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
 
     reply.send(error)
   })
+
+  fastify.register(multipart)
 
   fastify.get(
     '/',
@@ -101,6 +104,36 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
       const user = await userService.update(request.params.id, request.body)
 
       reply.send(user)
+    }
+  )
+
+  fastify.put(
+    '/:id/picture',
+    {
+      schema: {
+        params: Type.Object({
+          id: Type.Number()
+        }),
+        response: {
+          200: {},
+          404: Type.Object({
+            message: Type.String()
+          })
+        }
+      }
+    },
+    async (request, reply) => {
+      const data = await request.file()
+
+      if (!data) {
+        throw new Error('File is required')
+      }
+
+      const buffer = await data.toBuffer()
+
+      await userService.setUserPicture(request.params.id, buffer)
+
+      reply.send()
     }
   )
 }

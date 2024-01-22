@@ -1,3 +1,4 @@
+// import { Stream } from 'node:stream'
 import type { UserRepository } from './repositories/user.repository.js'
 import type {
   UserResponseDTO,
@@ -6,6 +7,7 @@ import type {
 } from './user.dto.js'
 import type { User } from './user.entity.js'
 import { UserNotFoundException } from './user.exceptions.js'
+import FileRepository from '../files/file.repository.js'
 
 export default class UserService {
   private readonly userRepository: UserRepository
@@ -46,5 +48,17 @@ export default class UserService {
     const updatedUser = await this.userRepository.update(id, input)
 
     return updatedUser
+  }
+
+  async setUserPicture(id: User['id'], data: Buffer): Promise<any> {
+    const user = await this.userRepository.getById(id)
+
+    if (!user) {
+      throw new UserNotFoundException()
+    }
+
+    const fr = new FileRepository()
+
+    await fr.upload(data, `${user.id}.jpg`)
   }
 }
