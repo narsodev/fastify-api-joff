@@ -13,16 +13,27 @@ import postsRouter from '../modules/post/post.router.js'
 import { ajvFilePlugin } from './server.plugins.js'
 import { ApiException } from '@joff/api-exceptions'
 
-export default class Server {
+export default class FastifyServer {
   private server = fastify({
     ajv: {
       plugins: [ajvFilePlugin]
-    }
+    },
+    logger: true
   }).withTypeProvider<TypeBoxTypeProvider>()
   private port: number
 
   constructor(port: number) {
     this.port = port
+  }
+
+  async start() {
+    await this.addAuth()
+    await this.addSwagger()
+    await this.addRoutes()
+
+    await this.server.ready()
+
+    await this.server.listen({ port: this.port })
   }
 
   async addAuth() {
@@ -73,15 +84,5 @@ export default class Server {
     await this.server.register(authRouter, { prefix: '/api/auth' })
     await this.server.register(usersRouter, { prefix: '/api/users' })
     await this.server.register(postsRouter, { prefix: '/api/posts' })
-  }
-
-  async start() {
-    await this.addAuth()
-    await this.addSwagger()
-    await this.addRoutes()
-
-    await this.server.ready()
-
-    await this.server.listen({ port: this.port })
   }
 }

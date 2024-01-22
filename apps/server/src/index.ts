@@ -1,11 +1,10 @@
 import config from './config.js'
-import Server from './server/index.js'
+import FastifyServer from './server/fastify-server.js'
 
-const server = new Server(config.server.port)
+const server = new FastifyServer(config.server.port)
 
 try {
   await server.start()
-  console.log(`Server running on port ${config.server.port}`)
 } catch (error) {
   console.error(`Failed to start server on port ${config.server.port}`)
   console.error(error)
