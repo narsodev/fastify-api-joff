@@ -11,6 +11,7 @@ import UserPrismaRepository from '../modules/user/repositories/user.prisma-repos
 import db from '../db.js'
 import postsRouter from '../modules/post/post.router.js'
 import { ajvFilePlugin } from './server.plugins.js'
+import { ApiException } from '@joff/api-exceptions'
 
 export default class Server {
   private server = fastify({
@@ -55,6 +56,16 @@ export default class Server {
 
     await this.server.register(swaggerUi, {
       routePrefix: config.swagger.route
+    })
+  }
+
+  addErrorHandler() {
+    this.server.setErrorHandler((error, request, reply) => {
+      if (error instanceof ApiException) {
+        reply.status(error.code).send({ message: error.message })
+        return
+      }
+      reply.status(500).send({ message: 'Internal Server Error' })
     })
   }
 

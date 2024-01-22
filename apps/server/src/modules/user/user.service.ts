@@ -7,11 +7,11 @@ import type {
   UserUpdateDTO
 } from './user.dto.js'
 import { type User, type UserCreate } from './user.entity.js'
-import { UserNotFoundException } from './user.exceptions.js'
 import FileRepository from '../files/file.repository.js'
 import config from '../../config.js'
 import { requireAdmin, requireSelfOrAdmin } from './user.utils.js'
 import { IMAGE_FILE_EXTENSION } from '../constants.js'
+import { NotFoundException } from '@joff/api-exceptions'
 
 export default class UserService {
   private readonly userRepository: UserRepository
@@ -30,7 +30,7 @@ export default class UserService {
     const user = await this.userRepository.getById(id)
 
     if (!user) {
-      throw new UserNotFoundException()
+      throw new NotFoundException('User not found')
     }
 
     return user
@@ -67,7 +67,7 @@ export default class UserService {
     const user = await this.userRepository.getById(id)
 
     if (!user) {
-      throw new UserNotFoundException()
+      throw new NotFoundException('User not found')
     }
 
     const updatedUser = await this.userRepository.update(id, data)
@@ -87,7 +87,7 @@ export default class UserService {
     const user = await this.userRepository.getById(id)
 
     if (!user) {
-      throw new UserNotFoundException()
+      throw new NotFoundException('User not found')
     }
 
     await this.userRepository.delete(id)
@@ -97,14 +97,14 @@ export default class UserService {
     const user = await this.userRepository.getById(id)
 
     if (!user) {
-      throw new UserNotFoundException()
+      throw new NotFoundException('User not found')
     }
 
     const fr = new FileRepository()
 
     const bytes = await fr.download(this.getUserPictureFileName(user))
     if (!bytes) {
-      throw new Error('File not found')
+      throw new NotFoundException('File not found')
     }
 
     return bytes
@@ -124,7 +124,7 @@ export default class UserService {
     const user = await this.userRepository.getById(id)
 
     if (!user) {
-      throw new UserNotFoundException()
+      throw new NotFoundException('User not found')
     }
 
     const image = await sharp(data)
@@ -147,7 +147,7 @@ export default class UserService {
     const user = await this.userRepository.getById(id)
 
     if (!user) {
-      throw new UserNotFoundException()
+      throw new NotFoundException('User not found')
     }
 
     const fr = new FileRepository()

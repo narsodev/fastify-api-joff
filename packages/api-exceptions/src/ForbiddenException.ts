@@ -1,7 +1,8 @@
 import ApiException from './ApiException.js'
 
 export default class ForbiddenException extends ApiException {
-  constructor() {
-    super(403, 'Forbidden')
+  constructor(message = 'Forbidden') {
+    super(403, message)
+    this.name = 'ForbiddenException'
   }
 }

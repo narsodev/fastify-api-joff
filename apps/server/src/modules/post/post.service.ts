@@ -1,3 +1,4 @@
+import { NotFoundException } from '@joff/api-exceptions'
 import { User } from '../user/user.entity.js'
 import { PostCreateDTO, PostResponseDTO } from './post.dto.js'
 import { Post, PostCreate } from './post.types.js'
@@ -22,7 +23,7 @@ export default class PostService {
     const post = await this.postRepository.getById(id)
 
     if (!post) {
-      throw new Error('Post not found')
+      throw new NotFoundException('Post not found')
     }
 
     return post

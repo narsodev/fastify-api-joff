@@ -12,7 +12,6 @@ import {
   UserUpdateDTOSchema
 } from './user.dto.js'
 import { FastifyTypebox } from '../../server/server.types.js'
-import { UserNotFoundException } from './user.exceptions.js'
 import { FASTIFY_SCHEMA_SECURITY } from '../constants.js'
 
 const TAGS = ['Users']
@@ -21,17 +20,6 @@ const userRepository = new UserPrismaRepository(db)
 const userService = new UserService(userRepository)
 
 const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
-  fastify.setErrorHandler((error, request, reply) => {
-    if (error instanceof UserNotFoundException) {
-      reply.status(404).send({
-        message: error.message
-      })
-      return
-    }
-
-    reply.send(error)
-  })
-
   fastify.register(multipart, { attachFieldsToBody: true })
 
   fastify.get(

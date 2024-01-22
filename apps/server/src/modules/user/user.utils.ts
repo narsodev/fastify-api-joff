@@ -1,4 +1,4 @@
-import ForbiddenException from '../../exceptions/ForbiddenException.js'
+import { ForbiddenException } from '@joff/api-exceptions'
 import { User, UserRoles } from './user.entity.js'
 
 export const requireAdmin = (user: User): void => {
