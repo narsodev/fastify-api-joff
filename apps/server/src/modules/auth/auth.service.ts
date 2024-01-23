@@ -1,7 +1,7 @@
 import { compareWithHash } from '@joff/crypto'
 import type { UserRepository } from '../user/repositories/user.repository.js'
 import type { UserResponseDTO } from '../user/user.dto.js'
-import { AuthFailedException } from './auth.exceptions.js'
+import { UnauthorizedException } from '@joff/api-exceptions'
 
 export default class AuthService {
   private readonly userRepository: UserRepository
@@ -14,12 +14,16 @@ export default class AuthService {
     const user = await this.userRepository.getByEmail(email)
 
     if (!user) {
-      throw new AuthFailedException()
+      throw new UnauthorizedException(
+        'Authentication failed. Invalid email or password.'
+      )
     }
 
     const isPasswordValid = await compareWithHash(password, user.password)
     if (!isPasswordValid) {
-      throw new AuthFailedException()
+      throw new UnauthorizedException(
+        'Authentication failed. Invalid email or password.'
+      )
     }
 
     return user
