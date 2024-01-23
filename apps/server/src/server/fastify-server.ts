@@ -31,6 +31,7 @@ export default class FastifyServer {
   }).withTypeProvider<TypeBoxTypeProvider>()
 
   private readonly port: number
+  private readonly host = '0.0.0.0'
   private readonly dependencies: FastifyServerDependencies
 
   constructor(port: number, dependencies: FastifyServerDependencies) {
@@ -46,7 +47,7 @@ export default class FastifyServer {
 
     await this.server.ready()
 
-    await this.server.listen({ port: this.port })
+    await this.server.listen({ port: this.port, host: this.host })
   }
 
   async addAuth() {
