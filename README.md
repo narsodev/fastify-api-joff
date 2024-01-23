@@ -2,6 +2,24 @@
 
 This project is a **Node.js** application developed with **TypeScript**, **Fastify**, **Prisma**, and organized as a **monorepo** using **Lerna**.
 
+You can access it through this url (Swagger): [https://narsodev-fastify-api.onrender.com/api/docs](https://narsodev-fastify-api.onrender.com/api/docs)
+
+I have created some users and posts to make your experience a little better:
+
+User 1:
+- email: narsodev@gmail.com
+- password: narsodev
+- role: ADMIN
+
+User 2:
+- email: tester@test.com
+- password: tester
+- role: USER
+
+I recommend you playing with it, creating your own user (for which you will have to log in as ADMIN user before), set your profile picture, create a post... It will be funny :)
+
+BTW: I am using free tiers in the services I am using. Because of this, the application may be idle for a few minutes for its first API call.
+
 ## Table of Contents
 
 1. [Setup Instructions](#setup-instructions)
