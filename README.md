@@ -53,7 +53,7 @@ User Authentication is implemented using **JWT**. The user can **log in** using 
 
 Some **routes** are **protected**, and the user will need to **send** the **JWT** Token in the Authorization Header to access them. The user is validated using a [Fastify Hook](https://fastify.dev/docs/latest/Reference/Hooks/).
 
-**Roles** has been implemented. Some endpoints will **require** the user to have a specific **role** to access them, or to **be the owner** of the resource. For example, the user can only update his own profile, or delete his own profile picture.
+**Roles** have been implemented. Some endpoints will **require** the user to have a specific **role** to access them, or to **be the owner** of the resource. For example, the user can only update his own profile, or delete his own profile picture.
 Users with admin role can access all the endpoints.
 
 ## File Upload
