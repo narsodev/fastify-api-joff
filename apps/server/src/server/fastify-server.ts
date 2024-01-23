@@ -27,6 +27,7 @@ export default class FastifyServer {
   }
 
   async start() {
+    this.addErrorHandler()
     await this.addAuth()
     await this.addSwagger()
     await this.addRoutes()
@@ -76,7 +77,7 @@ export default class FastifyServer {
         reply.status(error.code).send({ message: error.message })
         return
       }
-      reply.status(500).send({ message: 'Internal Server Error' })
+      reply.send(error)
     })
   }
 

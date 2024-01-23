@@ -20,14 +20,17 @@ export default class FileRepository {
   }
 
   async download(filename: string): Promise<Uint8Array | undefined> {
-    const command = new GetObjectCommand({
-      Bucket: config.aws.s3.bucketName,
-      Key: filename
-    })
+    try {
+      const command = new GetObjectCommand({
+        Bucket: config.aws.s3.bucketName,
+        Key: filename
+      })
 
-    const response = await this.s3.send(command)
-
-    return response.Body?.transformToByteArray()
+      const response = await this.s3.send(command)
+      return response.Body?.transformToByteArray()
+    } catch (error) {
+      return undefined
+    }
   }
 
   async upload(file: Buffer, filename: string): Promise<void> {
