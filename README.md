@@ -88,7 +88,7 @@ GET, PUT and DELETE endpoints are implemented for these purposes.
 
 ## Testing and Documentation
 
-The project is tested using [Vitest](https://vitest.dev/). You can run the tests using the following command:
+The project is tested using [Vitest](https://vitest.dev/). I added some unit and integration tests. You can run the tests using the following command:
 
 ```bash
 npm run test
