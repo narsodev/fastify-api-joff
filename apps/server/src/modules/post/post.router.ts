@@ -10,6 +10,7 @@ import {
 import PostPrismaRepository from './repositories/post.prisma-repository.js'
 import PostService from './post.service.js'
 import { FASTIFY_SCHEMA_SECURITY } from '../constants.js'
+import { ApiExceptionSchema } from '@joff/api-exceptions'
 
 const TAGS = ['Posts']
 
@@ -49,9 +50,7 @@ const postsRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
         }),
         response: {
           200: PostResponseDTOSchema,
-          404: Type.Object({
-            message: Type.String()
-          })
+          404: ApiExceptionSchema
         },
         tags: TAGS,
         summary: 'Get post by id'

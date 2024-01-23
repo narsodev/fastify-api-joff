@@ -3,6 +3,7 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 import { UserRepository } from '../user/repositories/user.repository.js'
 import { UserTokenSchema } from './auth.schemas.js'
 import { User } from '../user/user.entity.js'
+import { UnauthorizedException } from '@joff/api-exceptions'
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -27,11 +28,7 @@ export const decorateWithAuth = (
       await request.jwtVerify()
       const tokenIsValid = Value.Check(UserTokenSchema, request.user)
       if (!tokenIsValid) {
-        // TODO: throw unauthorized error
-        reply.status(401).send({
-          message: 'Unauthorized'
-        })
-        return
+        throw new UnauthorizedException()
       }
 
       const user = Value.Decode(UserTokenSchema, request.user)

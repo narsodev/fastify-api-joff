@@ -13,6 +13,7 @@ import {
 } from './user.dto.js'
 import { FastifyTypebox } from '../../server/server.types.js'
 import { FASTIFY_SCHEMA_SECURITY } from '../constants.js'
+import { ApiExceptionSchema, BadRequestException } from '@joff/api-exceptions'
 
 const TAGS = ['Users']
 
@@ -49,9 +50,7 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
         }),
         response: {
           200: UserResponseDTOSchema,
-          404: Type.Object({
-            message: Type.String()
-          })
+          404: ApiExceptionSchema
         },
         tags: TAGS,
         summary: 'Get user by id'
@@ -99,9 +98,7 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
         body: UserUpdateDTOSchema,
         response: {
           200: UserResponseDTOSchema,
-          404: Type.Object({
-            message: Type.String()
-          })
+          404: ApiExceptionSchema
         },
         tags: TAGS,
         summary: 'Update user by id',
@@ -132,9 +129,7 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
         }),
         response: {
           204: {},
-          404: Type.Object({
-            message: Type.String()
-          })
+          404: ApiExceptionSchema
         },
         tags: TAGS,
         summary: 'Delete user by id',
@@ -199,9 +194,8 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
         },
         response: {
           204: {},
-          404: Type.Object({
-            message: Type.String()
-          })
+          400: ApiExceptionSchema,
+          404: ApiExceptionSchema
         },
         consumes: ['multipart/form-data'],
         description: 'File must be an image',
@@ -216,7 +210,7 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
         .picture
 
       if (!data) {
-        throw new Error('File is required')
+        throw new BadRequestException('Picture is required')
       }
 
       const buffer = await data.toBuffer()
@@ -241,9 +235,7 @@ const usersRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
         }),
         response: {
           204: {},
-          404: Type.Object({
-            message: Type.String()
-          })
+          404: ApiExceptionSchema
         },
         tags: TAGS,
         summary: 'Delete user picture by id',

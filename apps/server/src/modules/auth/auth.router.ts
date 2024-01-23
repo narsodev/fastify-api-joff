@@ -4,6 +4,7 @@ import type { FastifyTypebox } from '../../server/server.types.js'
 import AuthService from './auth.service.js'
 import UserPrismaRepository from '../user/repositories/user.prisma-repository.js'
 import db from '../../db.js'
+import { ApiExceptionSchema } from '@joff/api-exceptions'
 
 const TAGS = ['Auth']
 
@@ -23,9 +24,7 @@ const authRouter: FastifyPluginAsync = async (fastify: FastifyTypebox) => {
           200: Type.Object({
             token: Type.String()
           }),
-          401: Type.Object({
-            message: Type.String()
-          })
+          401: ApiExceptionSchema
         },
         tags: TAGS,
         summary: 'Login'
