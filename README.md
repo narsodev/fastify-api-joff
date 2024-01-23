@@ -22,6 +22,12 @@ npm install
 
 # Run db migrations
 npm run db:deploy
+
+# Run the server
+npm run dev
+
+# Run the tests
+npm run test
 ```
 
 ## Monorepo Setup
