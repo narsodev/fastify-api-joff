@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
-import type { User, UserCreate, UserUpdate } from '../user.entity.js'
+
+import type { User, UserCreate, UserUpdate } from '../user.types.js'
 import type { UserRepository } from './user.repository.js'
 
 export default class UserPrismaRepository implements UserRepository {

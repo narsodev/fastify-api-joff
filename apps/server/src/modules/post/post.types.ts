@@ -1,4 +1,4 @@
-import { User } from '../user/user.entity.js'
+import type { User } from '../user/user.types.js'
 
 export interface Post {
   id: number

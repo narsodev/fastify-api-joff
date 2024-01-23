@@ -1,7 +1,8 @@
 import { NotFoundException } from '@joff/api-exceptions'
-import { User } from '../user/user.entity.js'
-import { PostCreateDTO, PostResponseDTO } from './post.dto.js'
-import { Post, PostCreate } from './post.types.js'
+
+import type { User } from '../user/user.types.js'
+import type { PostCreateDTO, PostResponseDTO } from './post.schemas.js'
+import type { Post, PostCreate } from './post.types.js'
 import type { PostRepository } from './repositories/post.repository.js'
 
 export default class PostService {

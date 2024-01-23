@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+
 import type { PostRepository } from './post.repository.js'
 import type { Post, PostCreate } from '../post.types.js'
 

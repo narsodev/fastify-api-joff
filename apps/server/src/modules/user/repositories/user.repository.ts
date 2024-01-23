@@ -1,4 +1,4 @@
-import type { User, UserCreate, UserUpdate } from '../user.entity.js'
+import type { User, UserCreate, UserUpdate } from '../user.types.js'
 
 export interface UserRepository {
   getAll(): Promise<User[]>

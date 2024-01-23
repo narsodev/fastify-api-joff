@@ -1,5 +1,6 @@
 import { Type, type Static } from '@sinclair/typebox'
-import { UserRoles } from './user.entity.js'
+
+import { UserRoles } from './user.types.js'
 
 export const UserResponseDTOSchema = Type.Object({
   id: Type.Number(),

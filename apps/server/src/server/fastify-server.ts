@@ -3,27 +3,39 @@ import swagger from '@fastify/swagger'
 import swaggerUi from '@fastify/swagger-ui'
 import jwt from '@fastify/jwt'
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
-import usersRouter from '../modules/user/user.router.js'
-import config from '../config.js'
-import authRouter from '../modules/auth/auth.router.js'
-import { decorateWithAuth } from '../modules/auth/auth.fastify-utils.js'
-import UserPrismaRepository from '../modules/user/repositories/user.prisma-repository.js'
-import db from '../db.js'
-import postsRouter from '../modules/post/post.router.js'
-import { ajvFilePlugin } from './server.plugins.js'
 import { ApiException } from '@joff/api-exceptions'
 
+import config from '../config.js'
+import { ajvFilePlugin } from './server.plugins.js'
+
+import { decorateWithAuth } from '../modules/auth/auth.fastify-utils.js'
+import { UserRepository } from '../modules/user/repositories/user.repository.js'
+import { type FileRepository } from '../modules/file/repositories/file.repository.js'
+import UserRouter from '../modules/user/user.router.js'
+import PostRouter from '../modules/post/post.router.js'
+import { PostRepository } from '../modules/post/repositories/post.repository.js'
+import AuthRouter from '../modules/auth/auth.router.js'
+
+export interface FastifyServerDependencies {
+  userRepository: UserRepository
+  fileRepository: FileRepository
+  postRepository: PostRepository
+}
+
 export default class FastifyServer {
-  private server = fastify({
+  private readonly server = fastify({
     ajv: {
       plugins: [ajvFilePlugin]
     },
     logger: true
   }).withTypeProvider<TypeBoxTypeProvider>()
-  private port: number
 
-  constructor(port: number) {
+  private readonly port: number
+  private readonly dependencies: FastifyServerDependencies
+
+  constructor(port: number, dependencies: FastifyServerDependencies) {
     this.port = port
+    this.dependencies = dependencies
   }
 
   async start() {
@@ -39,7 +51,7 @@ export default class FastifyServer {
 
   async addAuth() {
     await this.server.register(jwt, { secret: config.auth.jwtSecret })
-    await decorateWithAuth(this.server, new UserPrismaRepository(db))
+    await decorateWithAuth(this.server, this.dependencies.userRepository)
   }
 
   async addSwagger() {
@@ -82,8 +94,16 @@ export default class FastifyServer {
   }
 
   async addRoutes() {
-    await this.server.register(authRouter, { prefix: '/api/auth' })
-    await this.server.register(usersRouter, { prefix: '/api/users' })
-    await this.server.register(postsRouter, { prefix: '/api/posts' })
+    const authRouter = new AuthRouter(this.dependencies.userRepository)
+    await this.server.register(authRouter.register, { prefix: '/api/auth' })
+
+    const userRouter = new UserRouter(
+      this.dependencies.userRepository,
+      this.dependencies.fileRepository
+    )
+    await this.server.register(userRouter.register, { prefix: '/api/users' })
+
+    const postRouter = new PostRouter(this.dependencies.postRepository)
+    await this.server.register(postRouter.register, { prefix: '/api/posts' })
   }
 }

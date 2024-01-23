@@ -4,9 +4,12 @@ import {
   GetObjectCommand,
   DeleteObjectCommand
 } from '@aws-sdk/client-s3'
-import config from '../../config.js'
 
-export default class FileRepository {
+import config from '../../../config.js'
+
+import { FileRepository } from './file.repository.js'
+
+export default class FileS3Repository implements FileRepository {
   private readonly s3: S3
 
   constructor() {

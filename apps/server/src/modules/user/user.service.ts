@@ -1,23 +1,29 @@
-import { hash } from '@joff/crypto'
 import sharp from 'sharp'
-import type { UserRepository } from './repositories/user.repository.js'
+import { hash } from '@joff/crypto'
+import { NotFoundException } from '@joff/api-exceptions'
+
+import config from '../../config.js'
+import { IMAGE_FILE_EXTENSION } from '../constants.js'
+
 import type {
   UserResponseDTO,
   UserCreateDTO,
   UserUpdateDTO
-} from './user.dto.js'
-import { type User, type UserCreate } from './user.entity.js'
-import FileRepository from '../files/file.repository.js'
-import config from '../../config.js'
+} from './user.schemas.js'
+import type { User, UserCreate } from './user.types.js'
+
 import { requireAdmin, requireSelfOrAdmin } from './user.utils.js'
-import { IMAGE_FILE_EXTENSION } from '../constants.js'
-import { NotFoundException } from '@joff/api-exceptions'
+
+import type { UserRepository } from './repositories/user.repository.js'
+import type { FileRepository } from '../file/repositories/file.repository.js'
 
 export default class UserService {
   private readonly userRepository: UserRepository
+  private readonly fileRepository: FileRepository
 
-  constructor(userRepository: UserRepository) {
+  constructor(userRepository: UserRepository, fileRepository: FileRepository) {
     this.userRepository = userRepository
+    this.fileRepository = fileRepository
   }
 
   async getAll(): Promise<UserResponseDTO[]> {
@@ -100,9 +106,9 @@ export default class UserService {
       throw new NotFoundException('User not found')
     }
 
-    const fr = new FileRepository()
-
-    const bytes = await fr.download(this.getUserPictureFileName(user))
+    const bytes = await this.fileRepository.download(
+      this.getUserPictureFileName(user)
+    )
     if (!bytes) {
       throw new NotFoundException('File not found')
     }
@@ -132,8 +138,7 @@ export default class UserService {
       .webp()
       .toBuffer()
 
-    const fr = new FileRepository()
-    await fr.upload(image, this.getUserPictureFileName(user))
+    await this.fileRepository.upload(image, this.getUserPictureFileName(user))
   }
 
   async deleteUserPicture({
@@ -150,8 +155,7 @@ export default class UserService {
       throw new NotFoundException('User not found')
     }
 
-    const fr = new FileRepository()
-    await fr.delete(this.getUserPictureFileName(user))
+    await this.fileRepository.delete(this.getUserPictureFileName(user))
   }
 
   getUserPictureFileName(user: User): string {

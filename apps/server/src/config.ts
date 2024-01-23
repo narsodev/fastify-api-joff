@@ -25,7 +25,7 @@ const config = {
       url: 'https://www.linkedin.com/in/narsodev/'
     },
     authTokenDescription:
-      'Your bearer token. You can get one in /api/auth/login'
+      'Your bearer token. You can get one in /api/auth/login. Prefix it with "Bearer "'
   }
 } as const
 

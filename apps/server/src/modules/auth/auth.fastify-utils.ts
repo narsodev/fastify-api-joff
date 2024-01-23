@@ -1,9 +1,11 @@
 import { Value } from '@sinclair/typebox/value'
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
-import { UserRepository } from '../user/repositories/user.repository.js'
-import { UserTokenSchema } from './auth.schemas.js'
-import { User } from '../user/user.entity.js'
 import { UnauthorizedException } from '@joff/api-exceptions'
+
+import { UserTokenSchema } from './auth.schemas.js'
+import type { User } from '../user/user.types.js'
+
+import type { UserRepository } from '../user/repositories/user.repository.js'
 
 declare module 'fastify' {
   interface FastifyInstance {
