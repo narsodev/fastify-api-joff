@@ -52,6 +52,8 @@ npm run test
 
 For improved code organization and maintainability, this project is set up as a monorepo using Lerna. The **structure** is **well-organized** with separate **packages** for different concerns such as **crypto** and **exceptions**.
 
+I decided to **prefix** the **names** of the packages with **@joff**. joff would stand for **Job Offer**, I decided this name as the codename for this project.
+
 ## Server Setup
 
 The server is separated into **modules** for each concern such as **auth**, **users**, and **posts**. Each module has its **own** **routes**, **controllers** and **services**.
