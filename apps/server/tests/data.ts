@@ -16,11 +16,16 @@ const basicUsers = [
   }
 ] as const
 
-export const usersMock: User[] = await Promise.all(
+export const usersMock: Array<
+  User & {
+    rawPassword: string
+  }
+> = await Promise.all(
   basicUsers.map(async (user, index) => ({
     ...user,
     id: index + 1,
     password: await hash(user.password, 10),
+    rawPassword: user.password,
     createdAt: new Date(),
     updatedAt: new Date()
   }))

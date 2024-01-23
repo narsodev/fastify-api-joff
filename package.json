@@ -5,6 +5,8 @@
     "build": "lerna run build",
     "start": "lerna run start",
     "dev": "lerna run dev --stream --parallel",
+    "test": "lerna run test --stream --parallel",
+    "test:watch": "lerna run test:watch --stream --parallel",
     "db:deploy": "lerna run db:deploy --scope=@joff/server"
   },
   "workspaces": [

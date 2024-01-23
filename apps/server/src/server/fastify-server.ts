@@ -27,7 +27,7 @@ export default class FastifyServer {
     ajv: {
       plugins: [ajvFilePlugin]
     },
-    logger: true
+    logger: process.env.NODE_ENV !== 'test'
   }).withTypeProvider<TypeBoxTypeProvider>()
 
   private readonly port: number
@@ -95,15 +95,29 @@ export default class FastifyServer {
 
   async addRoutes() {
     const authRouter = new AuthRouter(this.dependencies.userRepository)
-    await this.server.register(authRouter.register, { prefix: '/api/auth' })
+    await this.server.register((fastify) => authRouter.register(fastify), {
+      prefix: '/api/auth'
+    })
 
     const userRouter = new UserRouter(
       this.dependencies.userRepository,
       this.dependencies.fileRepository
     )
-    await this.server.register(userRouter.register, { prefix: '/api/users' })
+    await this.server.register((fastify) => userRouter.register(fastify), {
+      prefix: '/api/users'
+    })
 
     const postRouter = new PostRouter(this.dependencies.postRepository)
-    await this.server.register(postRouter.register, { prefix: '/api/posts' })
+    await this.server.register((fastify) => postRouter.register(fastify), {
+      prefix: '/api/posts'
+    })
+  }
+
+  getServer() {
+    return this.server
+  }
+
+  stop() {
+    this.server.close()
   }
 }
